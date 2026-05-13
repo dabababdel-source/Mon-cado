@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Joyeux Anniversaire Maman 💖</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ===========================
+       CSS VARIABLES & RESET
+    =========================== */
+    :root {
+      --rouge:       #C0392B;
+      --rouge-doux:  #E8786D;
+      --rouge-pale:  #F5C6C2;
+      --rose:        #F9E4E2;
+      --blanc:       #FFFAF8;
+      --or:          #D4AF6A;
+      --or-clair:    #F0D9A8;
+      --or-pale:     #FBF4E3;
+      --texte:       #3D1F1A;
+      --texte-doux:  #7A3D35;
+
+      --transition-lente: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-rapide: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--blanc);
+      color: var(--texte);
+      overflow-x: hidden;
+      cursor: default;
+    }
+
+    /* ===========================
+       PAGES (sections plein écran)
+    =========================== */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity var(--transition-lente);
+    }
+
+    .page.active {
+      opacity: 1;
+    }
+
+    /* Cache toutes les pages sauf la première au départ */
+    #page-2, #page-3, #page-4 {
+      display: none;
+    }
+
+    /* ===========================
+       PAGE 1 — ACCUEIL
+    =========================== */
+    #page-1 {
+      background: linear-gradient(135deg, #FFFAF8 0%, #FBF4E3 50%, #F9E4E2 100%);
+    }
+
+    /* Motif arabesque en fond */
+    #page-1::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(212,175,106,0.12) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(192,57,43,0.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    /* Bordure dorée décorative */
+    .border-decoration {
+      position: absolute;
+      inset: 20px;
+      border: 1.5px solid rgba(212,175,106,0.35);
+      pointer-events: none;
+      animation: borderGlow 4s ease-in-out infinite alternate;
+    }
+
+    /* Coins arabesque SVG */
+    .corner {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      opacity: 0.55;
+    }
+    .corner.tl { top: 18px;    left: 18px; }
+    .corner.tr { top: 18px;    right: 18px;   transform: scaleX(-1); }
+    .corner.bl { bottom: 18px; left: 18px;    transform: scaleY(-1); }
+    .corner.br { bottom: 18px; right: 18px;   transform: scale(-1); }
+
+    /* Contenu central */
+    .hero-content {
+      position: relative;
+      text-align: center;
+      z-index: 2;
+      padding: 2rem;
+    }
+
+    .arabic-top {
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: var(--or);
+      letter-spacing: 0.08em;
+      margin-bottom: 1.2rem;
+      font-weight: 300;
+      direction: rtl;
+      animation: fadeDown 1s 0.3s both;
+    }
+
+    .main-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.8rem, 8vw, 6rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--texte);
+      animation: fadeUp 1s 0.5s both;
+    }
+
+    .main-title em {
+      display: block;
+      font-style: italic;
+      color: var(--rouge);
+      font-size: 1.15em;
+    }
+
+    .heart-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1.6rem 0;
+      animation: fadeUp 1s 0.7s both;
+    }
+
+    .heart-divider span {
+      display: block;
+      height: 1px;
+      width: 80px;
+      background: linear-gradient(to right, transparent, var(--or));
+    }
+    .heart-divider span:last-child {
+      background: linear-gradient(to left, transparent, var(--or));
+    }
+
+    .heart-icon {
+      color: var(--rouge);
+      font-size: 1.6rem;
+      animation: heartbeat 1.5s ease-in-out infinite;
+    }
+
+    .subtitle {
+      font-size: clamp(0.85rem, 2vw, 1.05rem);
+      color: var(--texte-doux);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 400;
+      margin-bottom: 2.8rem;
+      animation: fadeUp 1s 0.9s both;
+    }
+
+    /* Bouton surprise */
+    .btn-surprise {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 1rem 2.4rem;
+      background: linear-gradient(135deg, var(--rouge) 0%, var(--rouge-doux) 100%);
+      color: #fff;
+      border: none;
+      border-radius: 60px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(192,57,43,0.35);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeUp 1s 1.1s both;
+    }
+
+    .btn-surprise::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .btn-surprise:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 14px 40px rgba(192,57,43,0.45);
+    }
+    .btn-surprise:hover::before { opacity: 1; }
+    .btn-surprise:active { transform: translateY(0) scale(0.98); }
+
+    .btn-icon {
+      font-size: 1.3rem;
+      animation: wiggle 2s 2s ease-in-out infinite;
+    }
+
+    /* Jasmin flottants */
+    .jasmin-float {
+      position: absolute;
+      font-size: clamp(1rem, 2.5vw, 1.6rem);
+      pointer-events: none;
+      animation: floatAround linear infinite;
+      opacity: 0.7;
+    }
+
+    /* ===========================
+       TRANSITION — ANIMATION CADEAU
+    =========================== */
+    #gift-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,250,248,0);
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    #gift-overlay.opening {
+      animation: overlayIn 0.5s forwards;
+      pointer-events: all;
+    }
+
+    #gift-overlay.revealed {
+      animation: overlayOut 0.8s 1.2s forwards;
+    }
+
+    .gift-box {
+      font-size: 8rem;
+      animation: none;
+      transform-origin: center;
+    }
+
+    #gift-overlay.opening .gift-box {
+      animation: giftPulse 1.2s ease-in-out;
+    }
+
+    /* ===========================
+       PAGE 2 — MESSAGE
+    =========================== */
+    #page-2 {
+      background: linear-gradient(160deg, #FBF4E3 0%, #FFFAF8 40%, #F9E4E2 100%);
+    }
+
+    #page-2::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 10% 90%, rgba(212,175,106,0.1) 0%, transparent 40%),
+        radial-gradient(circle at 90% 10%, rgba(232,120,109,0.1) 0%, transparent 40%);
+      pointer-events: none;
+    }
+
+    .letter-container {
+      max-width: 680px;
+      width: 90%;
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .letter-badge {
+      display: inline-block;
+      padding: 0.4rem 1.2rem;
+      border: 1px solid var(--or);
+      border-radius: 30px;
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--or);
+      margin-bottom: 1.8rem;
+      animation: fadeDown 0.8s 0.2s both;
+    }
+
+    .letter-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 300;
+      color: var(--texte);
+      margin-bottom: 2rem;
+      animation: fadeUp 0.8s 0.4s both;
+    }
+
+    .letter-title em { color: var(--rouge); font-style: italic; }
+
+    .letter-body {
+      font-size: clamp(0.95rem, 2vw, 1.08rem);
+      line-height: 1.95;
+      color: var(--texte-doux);
+      font-weight: 300;
+      text-align: left;
+      background: rgba(255,255,255,0.65);
+      border-left: 3px solid var(--or);
+      padding: 1.8rem 2rem;
+      border-radius: 0 16px 16px 0;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(4px);
+      animation: fadeUp 0.8s 0.6s both;
+    }
+
+    .letter-body p { margin-bottom: 1.2rem; }
+    .letter-body p:last-child { margin-bottom: 0; }
+
+    .letter-signature {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.5rem;
+      color: var(--rouge);
+      margin-bottom: 2.5rem;
+      animation: fadeUp 0.8s 0.8s both;
+    }
+
+    .btn-final {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.9rem 2.2rem;
+      background: transparent;
+      color: var(--or);
+      border: 1.5px solid var(--or);
+      border-radius: 60px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: fadeUp 0.8s 1s both;
+    }
+
+    .btn-final:hover {
+      background: var(--or);
+      color: #fff;
+      box-shadow: 0 8px 25px rgba(212,175,106,0.4);
+      transform: translateY(-2px);
+    }
+
+    /* ===========================
+       PAGE 3 — FINALE
+    =========================== */
+    #page-3 {
+      background: linear-gradient(145deg, #1A0A08 0%, #3D1F1A 50%, #2A1008 100%);
+      color: #fff;
+    }
+
+    #page-3::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 50% 40%, rgba(212,175,106,0.2) 0%, transparent 60%),
+        radial-gradient(circle at 80% 20%, rgba(192,57,43,0.15) 0%, transparent 40%),
+        radial-gradient(circle at 20% 80%, rgba(232,120,109,0.1) 0%, transparent 40%);
+      pointer-events: none;
+    }
+
+    .finale-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 2rem;
+      max-width: 700px;
+    }
+
+    .gold-ornament {
+      color: var(--or);
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 1.5rem;
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+
+    .finale-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.5rem, 7vw, 5.5rem);
+      font-weight: 300;
+      color: var(--or-clair);
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 40px rgba(212,175,106,0.5);
+    }
+
+    .finale-title strong {
+      display: block;
+      color: #fff;
+      font-style: italic;
+      font-weight: 300;
+    }
+
+    .star-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      margin: 1.5rem 0;
+    }
+
+    .star-row span {
+      color: var(--or);
+      font-size: 1.2rem;
+      animation: starTwinkle 2s ease-in-out infinite;
+    }
+    .star-row span:nth-child(2) { animation-delay: 0.3s; }
+    .star-row span:nth-child(3) { animation-delay: 0.6s; }
+    .star-row span:nth-child(4) { animation-delay: 0.9s; }
+    .star-row span:nth-child(5) { animation-delay: 1.2s; }
+
+    .finale-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1.1rem, 2.5vw, 1.45rem);
+      color: rgba(255,255,255,0.8);
+      line-height: 1.7;
+      margin-bottom: 2rem;
+      padding: 0 1rem;
+    }
+
+    .arabic-finale {
+      direction: rtl;
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      color: var(--or);
+      letter-spacing: 0.04em;
+      padding: 1rem 2rem;
+      border: 1px solid rgba(212,175,106,0.4);
+      border-radius: 12px;
+      display: inline-block;
+      margin-bottom: 2rem;
+      background: rgba(212,175,106,0.08);
+      animation: glowPulse 3s 0.5s ease-in-out infinite;
+    }
+
+    .typewriter-wrap {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1rem, 2.2vw, 1.3rem);
+      color: rgba(255,255,255,0.55);
+      min-height: 2em;
+      margin-bottom: 2.5rem;
+    }
+
+    .cursor-blink {
+      display: inline-block;
+      width: 2px;
+      height: 1.1em;
+      background: var(--or);
+      margin-left: 2px;
+      vertical-align: middle;
+      animation: blink 0.9s step-end infinite;
+    }
+
+    .finale-heart {
+      font-size: 3.5rem;
+      display: block;
+      animation: heartbeatBig 1.5s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(192,57,43,0.8));
+    }
+
+    /* ===========================
+       CANVAS CONFETTIS
+    =========================== */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    #confetti-canvas.active { opacity: 1; }
+
+    /* ===========================
+       ANIMATIONS CSS
+    =========================== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      14%       { transform: scale(1.25); }
+      28%       { transform: scale(1); }
+      42%       { transform: scale(1.15); }
+    }
+    @keyframes heartbeatBig {
+      0%, 100% { transform: scale(1); }
+      14%       { transform: scale(1.3); }
+      28%       { transform: scale(1); }
+      42%       { transform: scale(1.2); }
+    }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25%       { transform: rotate(-15deg); }
+      75%       { transform: rotate(15deg); }
+    }
+    @keyframes floatAround {
+      0%   { transform: translateY(0) rotate(0deg);   opacity: 0.6; }
+      50%  { transform: translateY(-30px) rotate(20deg); opacity: 0.9; }
+      100% { transform: translateY(0) rotate(0deg);   opacity: 0.6; }
+    }
+    @keyframes borderGlow {
+      from { box-shadow: inset 0 0 20px rgba(212,175,106,0.05); }
+      to   { box-shadow: inset 0 0 60px rgba(212,175,106,0.12); }
+    }
+    @keyframes overlayIn {
+      0%   { opacity: 0; background: rgba(255,250,248,0); }
+      40%  { opacity: 1; background: rgba(255,250,248,0.95); }
+      100% { opacity: 1; background: rgba(255,250,248,0.95); }
+    }
+    @keyframes overlayOut {
+      from { opacity: 1; }
+      to   { opacity: 0; pointer-events: none; }
+    }
+    @keyframes giftPulse {
+      0%   { transform: scale(1) rotate(0deg); }
+      20%  { transform: scale(1.3) rotate(-5deg); }
+      40%  { transform: scale(0.9) rotate(5deg); }
+      60%  { transform: scale(1.4) rotate(-3deg); }
+      80%  { transform: scale(1.1) rotate(2deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+    @keyframes glowPulse {
+      0%, 100% { text-shadow: 0 0 10px rgba(212,175,106,0.3); }
+      50%       { text-shadow: 0 0 30px rgba(212,175,106,0.7), 0 0 60px rgba(212,175,106,0.3); }
+    }
+    @keyframes starTwinkle {
+      0%, 100% { opacity: 1;   transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.7); }
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+    @keyframes pageSlideIn {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===========================
+       RESPONSIVE
+    =========================== */
+    @media (max-width: 600px) {
+      .border-decoration { inset: 10px; }
+      .corner { width: 55px; height: 55px; }
+      .corner.tl { top: 8px;    left: 8px; }
+      .corner.tr { top: 8px;    right: 8px; }
+      .corner.bl { bottom: 8px; left: 8px; }
+      .corner.br { bottom: 8px; right: 8px; }
+      .letter-body { padding: 1.2rem 1rem; }
+    }
+
+    /* Scroll arrow hint */
+    .scroll-hint {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--or);
+      font-size: 1.4rem;
+      animation: bounceDown 2s 2s ease-in-out infinite;
+      opacity: 0.6;
+    }
+    @keyframes bounceDown {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(8px); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ==========================================
+     CANVAS CONFETTIS
+========================================== -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ==========================================
+     OVERLAY TRANSITION CADEAU
+========================================== -->
+<div id="gift-overlay">
+  <div class="gift-box">🎁</div>
+</div>
+
+<!-- ==========================================
+     PAGE 1 — ACCUEIL
+========================================== -->
+<section id="page-1" class="page active">
+
+  <!-- Bordure dorée -->
+  <div class="border-decoration"></div>
+
+  <!-- Coins arabesques SVG -->
+  <svg class="corner tl" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M5 5 Q5 40 40 40 Q5 40 5 75" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M5 5 Q40 5 40 40 Q40 5 75 5" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <circle cx="5" cy="5" r="3" fill="#D4AF6A"/>
+    <path d="M20 5 Q20 20 5 20" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
+    <path d="M5 20 Q20 20 20 35" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
+  </svg>
+  <svg class="corner tr" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M5 5 Q5 40 40 40 Q5 40 5 75" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M5 5 Q40 5 40 40 Q40 5 75 5" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <circle cx="5" cy="5" r="3" fill="#D4AF6A"/>
+    <path d="M20 5 Q20 20 5 20" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
+    <path d="M5 20 Q20 20 20 35" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
+  </svg>
+  <svg class="corner bl" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M5 5 Q5 40 40 40 Q5 40 5 75" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M5 5 Q40 5 40 40 Q40 5 75 5" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <circle cx="5" cy="5" r="3" fill="#D4AF6A"/>
+    <path d="M20 5 Q20 20 5 20" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
+    <path d="M5 20 Q20 20 20 35" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
+  </svg>
+  <svg class="corner br" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M5 5 Q5 40 40 40 Q5 40 5 75" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M5 5 Q40 5 40 40 Q40 5 75 5" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <circle cx="5" cy="5" r="3" fill="#D4AF6A"/>
+    <path d="M20 5 Q20 20 5 20" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
+    <path d="M5 20 Q20 20 20 35" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
+  </svg>
+
+  <!-- Contenu -->
+  <div class="hero-content">
+    <p class="arabic-top">يا أمي، أنتِ نور حياتي ✨</p>
+
+    <h1 class="main-title">
+      Joyeux<br/>
+      <em>Anniversaire</em>
+    </h1>
+
+    <div class="heart-divider">
+      <span></span>
+      <span class="heart-icon">♥</span>
+      <span></span>
+    </div>
+
+    <p class="subtitle">Pour la plus belle des mamans</p>
+
+    <button class="btn-surprise" id="btn-open">
+      <span class="btn-icon">🎁</span>
+      Ouvrir la surprise
+    </button>
+  </div>
+
+  <!-- Flèche bas -->
+  <div class="scroll-hint">↓</div>
+</section>
+
+<!-- ==========================================
+     PAGE 2 — MESSAGE / LETTRE
+========================================== -->
+<section id="page-2" class="page">
+  <div class="letter-container">
+    <span class="letter-badge">💌 Une lettre pour toi</span>
+
+    <h2 class="letter-title">
+      Ma chère<br/><em>Maman</em>
+    </h2>
+
+    <div class="letter-body">
+      <p>
+        Il y a des mots qu'on garde trop longtemps au fond du cœur, pensant
+        qu'il y aura toujours un autre moment pour les dire. Aujourd'hui, je
+        refuse de les garder plus longtemps.
+      </p>
+      <p>
+        Tu es la première voix que j'ai entendue, la première main qui m'a
+        tenu, le premier amour que j'ai connu. Tu m'as appris ce que signifie
+        donner sans jamais compter, aimer sans condition, et sourire même dans
+        les tempêtes.
+      </p>
+      <p>
+        Je me souviens de tout — de ton parfum le matin, de tes mains qui
+        préparaient le dîner, de ta voix qui chassait mes peurs la nuit. Ces
+        petites choses, ce sont les plus grandes richesses de ma vie.
+      </p>
+      <p>
+        En ce jour si spécial, je veux que tu saches : tout ce que je suis,
+        je le dois à toi. Ma force, ma douceur, ma résilience — c'est ton
+        héritage. Et je suis infiniment fier·e de te porter en moi chaque jour.
+      </p>
+      <p>
+        Que cette nouvelle année de ta vie soit illuminée de joie, de santé
+        et de tout l'amour que tu mérites — car tu le mérites plus que
+        quiconque au monde. 🌸
+      </p>
+    </div>
+
+    <p class="letter-signature">Avec tout l'amour du monde, ton enfant ❤️</p>
+
+    <button class="btn-final" id="btn-finale">
+      <span>Voir la page finale</span>
+      <span>✨</span>
+    </button>
+  </div>
+</section>
+
+<!-- ==========================================
+     PAGE 3 — FINALE
+========================================== -->
+<section id="page-3" class="page">
+  <div class="finale-content">
+
+    <span class="gold-ornament">❋</span>
+
+    <h2 class="finale-title">
+      Bonne<br/>
+      <strong>Fête Maman</strong>
+    </h2>
+
+    <div class="star-row">
+      <span>✦</span><span>✦</span><span>✦</span><span>✦</span><span>✦</span>
+    </div>
+
+    <p class="finale-quote">
+      « Il n'existe pas de mot assez grand pour décrire l'amour d'une mère —
+      c'est l'univers entier contenu dans deux bras ouverts. »
+    </p>
+
+    <div class="arabic-finale">
+      كل عام وأنتِ بخير يا أمّي ❤️
+    </div>
+
+    <div class="typewriter-wrap">
+      <span id="typewriter-text"></span><span class="cursor-blink"></span>
+    </div>
+
+    <span class="finale-heart">❤️</span>
+  </div>
+</section>
+
+
+<!-- ==========================================
+     JAVASCRIPT
+========================================== -->
+<script>
+  /* ----------------------------------------
+     JASMIN FLOTTANTS — Page 1
+  ---------------------------------------- */
+  const jasmins = ['🌼','🌸','✿','🌺','❀','💮'];
+  const p1 = document.getElementById('page-1');
+
+  for (let i = 0; i < 18; i++) {
+    const el = document.createElement('span');
+    el.classList.add('jasmin-float');
+    el.textContent = jasmins[Math.floor(Math.random() * jasmins.length)];
+    const size = 0.8 + Math.random() * 1.2;
+    el.style.cssText = `
+      left: ${Math.random() * 100}%;
+      top:  ${Math.random() * 100}%;
+      font-size: ${size}rem;
+      animation-duration: ${4 + Math.random() * 6}s;
+      animation-delay:    ${Math.random() * -8}s;
+    `;
+    p1.appendChild(el);
+  }
+
+  /* ----------------------------------------
+     NAVIGATION
+  ---------------------------------------- */
+  function showPage(id, delay = 0) {
+    setTimeout(() => {
+      document.querySelectorAll('.page').forEach(p => {
+        p.style.display = 'none';
+        p.classList.remove('active');
+      });
+      const target = document.getElementById(id);
+      target.style.display = 'flex';
+      // Force reflow
+      void target.offsetWidth;
+      target.classList.add('active');
+      target.style.animation = 'pageSlideIn 0.8s ease both';
+      window.scrollTo(0, 0);
+    }, delay);
+  }
+
+  // Activer la page 1 au chargement
+  document.addEventListener('DOMContentLoaded', () => {
+    const p1El = document.getElementById('page-1');
+    p1El.style.display = 'flex';
+    p1El.classList.add('active');
+  });
+
+  /* ----------------------------------------
+     BOUTON SURPRISE — Animation cadeau
+  ---------------------------------------- */
+  document.getElementById('btn-open').addEventListener('click', () => {
+    const overlay = document.getElementById('gift-overlay');
+
+    // Étape 1 : afficher l'overlay avec animation cadeau
+    overlay.classList.add('opening');
+
+    // Étape 2 : après animation, aller à la page 2
+    setTimeout(() => {
+      overlay.classList.add('revealed');
+      showPage('page-2');
+    }, 1400);
+
+    // Étape 3 : retirer l'overlay après la transition
+    setTimeout(() => {
+      overlay.classList.remove('opening', 'revealed');
+    }, 2500);
+  });
+
+  /* ----------------------------------------
+     BOUTON FINALE
+  ---------------------------------------- */
+  document.getElementById('btn-finale').addEventListener('click', () => {
+    showPage('page-3');
+    setTimeout(() => {
+      launchConfetti();
+      startTypewriter();
+    }, 600);
+  });
+
+  /* ----------------------------------------
+     TYPEWRITER EFFECT — Page 3
+  ---------------------------------------- */
+  const phrases = [
+    "Je t'aime plus que tous les mots du monde...",
+    "Merci d'exister, Maman 🌸",
+    "Tu es ma lumière, mon foyer, mon éternel refuge...",
+    "Bonne fête, la plus belle des mamans ❤️"
+  ];
+
+  let phraseIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+  let typeTimer = null;
+
+  function startTypewriter() {
+    const el = document.getElementById('typewriter-text');
+    el.textContent = '';
+    phraseIndex = 0;
+    charIndex = 0;
+    isDeleting = false;
+    if (typeTimer) clearTimeout(typeTimer);
+    typeLoop();
+  }
+
+  function typeLoop() {
+    const el = document.getElementById('typewriter-text');
+    const current = phrases[phraseIndex];
+
+    if (!isDeleting) {
+      el.textContent = current.slice(0, charIndex + 1);
+      charIndex++;
+      if (charIndex === current.length) {
+        isDeleting = true;
+        typeTimer = setTimeout(typeLoop, 2200);
+        return;
+      }
+    } else {
+      el.textContent = current.slice(0, charIndex - 1);
+      charIndex--;
+      if (charIndex === 0) {
+        isDeleting = false;
+        phraseIndex = (phraseIndex + 1) % phrases.length;
+        typeTimer = setTimeout(typeLoop, 500);
+        return;
+      }
+    }
+
+    const speed = isDeleting ? 40 : 65;
+    typeTimer = setTimeout(typeLoop, speed);
+  }
+
+  /* ----------------------------------------
+     CONFETTIS — Canvas JS
+  ---------------------------------------- */
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  let confettiParticles = [];
+  let confettiAnimId = null;
+
+  const COLORS = [
+    '#C0392B', '#E8786D', '#F5C6C2',
+    '#D4AF6A', '#F0D9A8', '#FFFAF8',
+    '#F9E4E2', '#A93226', '#FAD7A0'
+  ];
+
+  function resizeCanvas() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  class Particle {
+    constructor() { this.reset(true); }
+
+    reset(initial = false) {
+      this.x = Math.random() * canvas.width;
+      this.y = initial ? Math.random() * -canvas.height : -10;
+      this.w = 6 + Math.random() * 8;
+      this.h = 3 + Math.random() * 5;
+      this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+      this.rot = Math.random() * Math.PI * 2;
+      this.vx = (Math.random() - 0.5) * 2.5;
+      this.vy = 1.5 + Math.random() * 3;
+      this.vr = (Math.random() - 0.5) * 0.12;
+      this.opacity = 0.75 + Math.random() * 0.25;
+      this.shape = Math.random() < 0.3 ? 'circle' : 'rect';
+    }
+
+    update() {
+      this.x  += this.vx;
+      this.y  += this.vy;
+      this.rot += this.vr;
+      if (this.y > canvas.height + 20) this.reset();
+    }
+
+    draw() {
+      ctx.save();
+      ctx.globalAlpha = this.opacity;
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rot);
+      ctx.fillStyle = this.color;
+      if (this.shape === 'circle') {
+        ctx.beginPath();
+        ctx.arc(0, 0, this.w / 2, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
+      }
+      ctx.restore();
+    }
+  }
+
+  function launchConfetti() {
+    canvas.classList.add('active');
+    confettiParticles = Array.from({ length: 160 }, () => new Particle());
+
+    if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+
+    let tick = 0;
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      confettiParticles.forEach(p => { p.update(); p.draw(); });
+      tick++;
+      // Arrêter après ~8 secondes
+      if (tick < 480) {
+        confettiAnimId = requestAnimationFrame(animate);
+      } else {
+        canvas.classList.remove('active');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+    animate();
+  }
+</script>
+
+</body>
+</html>
