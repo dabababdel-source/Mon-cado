@@ -3,983 +3,1574 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Joyeux Anniversaire Maman 💖</title>
+  <title>Joyeux Anniversaire Mme André ✨</title>
 
-  <!-- Google Fonts -->
+  <!-- Google Fonts : Cormorant Garant (display littéraire) + Lato (corps de texte) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
 
   <style>
-    /* ===========================
-       CSS VARIABLES & RESET
-    =========================== */
+    /* ============================================================
+       VARIABLES & RESET
+    ============================================================ */
     :root {
-      --rouge:       #C0392B;
-      --rouge-doux:  #E8786D;
-      --rouge-pale:  #F5C6C2;
-      --rose:        #F9E4E2;
-      --blanc:       #FFFAF8;
-      --or:          #D4AF6A;
-      --or-clair:    #F0D9A8;
-      --or-pale:     #FBF4E3;
-      --texte:       #3D1F1A;
-      --texte-doux:  #7A3D35;
-
-      --transition-lente: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-      --transition-rapide: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      --nuit:      #0A0E2A;
+      --nuit-mid:  #141936;
+      --creme:     #F7F3EC;
+      --creme-mid: #EDE6D6;
+      --or:        #C9A84C;
+      --or-light:  #E8C96A;
+      --rose:      #F2BFCD;
+      --rose-mid:  #E8A5BE;
+      --blanc:     #FFFFFF;
+      --font-display: 'Cormorant Garant', Georgia, serif;
+      --font-body:    'Lato', sans-serif;
     }
 
-    *, *::before, *::after {
-      margin: 0; padding: 0;
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Montserrat', sans-serif;
-      background: var(--blanc);
-      color: var(--texte);
+      font-family: var(--font-body);
+      background: var(--nuit);
+      color: var(--creme);
       overflow-x: hidden;
-      cursor: default;
     }
 
-    /* ===========================
-       PAGES (sections plein écran)
-    =========================== */
-    .page {
+    /* Respecter la préférence de mouvement réduit */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* ============================================================
+       CANVAS PARTICULES (partagé entre sections)
+    ============================================================ */
+    #particle-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ============================================================
+       OVERLAY DE TRANSITION (enveloppe)
+    ============================================================ */
+    #transition-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--nuit);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    #transition-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ============================================================
+       NAVIGATION DOTS
+    ============================================================ */
+    #nav-dots {
+      position: fixed;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .nav-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(201,168,76,0.35);
+      border: 1.5px solid var(--or);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .nav-dot.active {
+      background: var(--or);
+      transform: scale(1.4);
+      box-shadow: 0 0 10px var(--or);
+    }
+    @media (max-width: 600px) { #nav-dots { right: 0.6rem; } }
+
+    /* ============================================================
+       SECTIONS GÉNÉRALES
+    ============================================================ */
+    .section {
+      position: relative;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      position: relative;
-      overflow: hidden;
-      opacity: 0;
-      transition: opacity var(--transition-lente);
+      padding: 4rem 1.5rem;
+      z-index: 1;
     }
 
-    .page.active {
-      opacity: 1;
-    }
-
-    /* Cache toutes les pages sauf la première au départ */
-    #page-2, #page-3, #page-4 {
-      display: none;
-    }
-
-    /* ===========================
+    /* ============================================================
        PAGE 1 — ACCUEIL
-    =========================== */
-    #page-1 {
-      background: linear-gradient(135deg, #FFFAF8 0%, #FBF4E3 50%, #F9E4E2 100%);
+    ============================================================ */
+    #page-accueil {
+      background: radial-gradient(ellipse at 60% 40%, #1a2050 0%, var(--nuit) 70%);
+      text-align: center;
+      overflow: hidden;
     }
 
-    /* Motif arabesque en fond */
-    #page-1::before {
+    /* Étoiles statiques en fond */
+    #page-accueil::before {
       content: '';
       position: absolute;
       inset: 0;
       background-image:
-        radial-gradient(circle at 20% 20%, rgba(212,175,106,0.12) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(192,57,43,0.08) 0%, transparent 50%);
+        radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px),
+        radial-gradient(circle, rgba(201,168,76,0.6) 1px, transparent 1px);
+      background-size: 180px 180px, 130px 130px, 90px 90px;
+      background-position: 20px 40px, 60px 20px, 10px 80px;
+      animation: starsTwinkle 8s ease-in-out infinite alternate;
       pointer-events: none;
     }
-
-    /* Bordure dorée décorative */
-    .border-decoration {
-      position: absolute;
-      inset: 20px;
-      border: 1.5px solid rgba(212,175,106,0.35);
-      pointer-events: none;
-      animation: borderGlow 4s ease-in-out infinite alternate;
+    @keyframes starsTwinkle {
+      0%   { opacity: 0.4; }
+      100% { opacity: 0.9; }
     }
 
-    /* Coins arabesque SVG */
-    .corner {
-      position: absolute;
+    /* Ligne décorative horizontale */
+    .ornament-line {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.2rem auto;
+      width: fit-content;
+      opacity: 0;
+      animation: fadeSlideUp 1s ease forwards;
+    }
+    .ornament-line .line {
       width: 80px;
-      height: 80px;
-      opacity: 0.55;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--or), transparent);
     }
-    .corner.tl { top: 18px;    left: 18px; }
-    .corner.tr { top: 18px;    right: 18px;   transform: scaleX(-1); }
-    .corner.bl { bottom: 18px; left: 18px;    transform: scaleY(-1); }
-    .corner.br { bottom: 18px; right: 18px;   transform: scale(-1); }
-
-    /* Contenu central */
-    .hero-content {
-      position: relative;
-      text-align: center;
-      z-index: 2;
-      padding: 2rem;
+    .ornament-line .diamond {
+      width: 8px; height: 8px;
+      background: var(--or);
+      transform: rotate(45deg);
+      box-shadow: 0 0 6px var(--or);
     }
 
-    .arabic-top {
-      font-size: clamp(1rem, 2.5vw, 1.4rem);
-      color: var(--or);
-      letter-spacing: 0.08em;
-      margin-bottom: 1.2rem;
+    /* Titre principal lettre par lettre */
+    #titre-principal {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 6vw, 5rem);
       font-weight: 300;
-      direction: rtl;
-      animation: fadeDown 1s 0.3s both;
+      letter-spacing: 0.05em;
+      color: var(--blanc);
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+    #titre-principal .lettre {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: lettreApparition 0.6s ease forwards;
+    }
+    @keyframes lettreApparition {
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .main-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2.8rem, 8vw, 6rem);
+    /* Sous-titre */
+    #sous-titre {
+      font-family: var(--font-display);
+      font-size: clamp(1rem, 2.5vw, 1.6rem);
       font-weight: 300;
-      line-height: 1.1;
-      color: var(--texte);
-      animation: fadeUp 1s 0.5s both;
-    }
-
-    .main-title em {
-      display: block;
       font-style: italic;
-      color: var(--rouge);
-      font-size: 1.15em;
+      color: var(--or-light);
+      opacity: 0;
+      animation: fadeSlideUp 1s ease 2.5s forwards;
+      margin-bottom: 2rem;
     }
 
-    .heart-divider {
+    /* Citation */
+    #citation-accueil {
+      max-width: 560px;
+      font-family: var(--font-display);
+      font-size: clamp(0.95rem, 2vw, 1.2rem);
+      font-style: italic;
+      font-weight: 300;
+      color: rgba(247,243,236,0.7);
+      line-height: 1.8;
+      border-left: 2px solid var(--or);
+      padding-left: 1.2rem;
+      text-align: left;
+      opacity: 0;
+      animation: fadeSlideUp 1s ease 3.2s forwards;
+      margin-bottom: 3rem;
+    }
+    #citation-accueil cite {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--or);
+      font-style: normal;
+    }
+
+    /* Bouton principal */
+    #btn-ouvrir {
+      position: relative;
+      padding: 1rem 2.8rem;
+      background: transparent;
+      border: 1.5px solid var(--or);
+      color: var(--or);
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      text-transform: uppercase;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeSlideUp 1s ease 4s forwards;
+      transition: color 0.4s ease;
+    }
+    #btn-ouvrir::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--or);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+      z-index: -1;
+    }
+    #btn-ouvrir:hover { color: var(--nuit); }
+    #btn-ouvrir:hover::before { transform: scaleX(1); }
+
+    /* Lueur pulsante autour du bouton */
+    #btn-ouvrir::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border: 1px solid rgba(201,168,76,0.4);
+      animation: pulseBorder 2s ease-in-out infinite;
+    }
+    @keyframes pulseBorder {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.03); }
+    }
+
+    /* ============================================================
+       ANIMATION ENVELOPPE (overlay de transition)
+    ============================================================ */
+    #envelope-wrap {
+      position: relative;
+      width: min(380px, 90vw);
+    }
+    .envelope {
+      width: 100%;
+      padding-top: 65%;
+      position: relative;
+    }
+    .env-body {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--creme-mid), var(--creme));
+      border-radius: 4px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    /* Rabat haut */
+    .env-flap {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 55%;
+      background: linear-gradient(160deg, var(--creme) 40%, #ddd8c4);
+      clip-path: polygon(0 0, 50% 100%, 100% 0);
+      transform-origin: top center;
+      transform: rotateX(0deg);
+      transition: transform 0.8s ease;
+      z-index: 2;
+    }
+    .envelope.open .env-flap {
+      transform: rotateX(-180deg);
+    }
+    /* Lettre qui sort */
+    .env-letter {
+      position: absolute;
+      left: 10%; width: 80%;
+      bottom: 10%;
+      height: 80%;
+      background: var(--blanc);
+      border-radius: 2px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 1rem;
-      margin: 1.6rem 0;
-      animation: fadeUp 1s 0.7s both;
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-style: italic;
+      color: var(--nuit);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      transform: translateY(0);
+      transition: transform 0.8s ease 0.5s;
+      z-index: 1;
+    }
+    .envelope.open .env-letter {
+      transform: translateY(-110%);
+    }
+    /* Pages qui s'envolent */
+    .flying-pages {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .flying-page {
+      position: absolute;
+      width: 40px; height: 55px;
+      background: var(--blanc);
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 2px;
+      opacity: 0;
+      animation: flyPage 1.5s ease forwards;
+    }
+    @keyframes flyPage {
+      0%   { opacity: 1; transform: translate(0,0) rotate(0deg) scale(1); }
+      100% { opacity: 0; transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(0.3); }
     }
 
-    .heart-divider span {
-      display: block;
+    /* ============================================================
+       PAGE 2 — LETTRE
+    ============================================================ */
+    #page-lettre {
+      background: linear-gradient(160deg, #0d1130 0%, #0A0E2A 100%);
+    }
+
+    .lettre-container {
+      max-width: 720px;
+      width: 100%;
+      background: var(--creme);
+      color: var(--nuit);
+      border-radius: 4px;
+      padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 6vw, 4rem);
+      box-shadow:
+        0 0 0 1px rgba(201,168,76,0.3),
+        0 30px 80px rgba(0,0,0,0.5),
+        inset 0 0 60px rgba(201,168,76,0.04);
+      position: relative;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .lettre-container.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Texture papier */
+    .lettre-container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      border-radius: 4px;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    /* Ligne rouge de marge */
+    .lettre-container::after {
+      content: '';
+      position: absolute;
+      left: 4rem;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: rgba(231,180,180,0.4);
+      pointer-events: none;
+    }
+    @media (max-width: 500px) { .lettre-container::after { display: none; } }
+
+    /* Lignes horizontales */
+    .lettre-lines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .lettre-lines span {
+      position: absolute;
+      left: 0; right: 0;
       height: 1px;
-      width: 80px;
-      background: linear-gradient(to right, transparent, var(--or));
-    }
-    .heart-divider span:last-child {
-      background: linear-gradient(to left, transparent, var(--or));
+      background: rgba(10,14,42,0.05);
     }
 
-    .heart-icon {
-      color: var(--rouge);
-      font-size: 1.6rem;
-      animation: heartbeat 1.5s ease-in-out infinite;
+    .lettre-date {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      color: rgba(10,14,42,0.45);
+      text-align: right;
+      margin-bottom: 2rem;
     }
-
-    .subtitle {
-      font-size: clamp(0.85rem, 2vw, 1.05rem);
-      color: var(--texte-doux);
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      font-weight: 400;
-      margin-bottom: 2.8rem;
-      animation: fadeUp 1s 0.9s both;
+    .lettre-titre {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 600;
+      color: var(--nuit);
+      margin-bottom: 0.3rem;
     }
-
-    /* Bouton surprise */
-    .btn-surprise {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.7rem;
-      padding: 1rem 2.4rem;
-      background: linear-gradient(135deg, var(--rouge) 0%, var(--rouge-doux) 100%);
-      color: #fff;
-      border: none;
-      border-radius: 60px;
-      font-family: 'Montserrat', sans-serif;
+    .lettre-titre-or { color: var(--or); }
+    .lettre-sous-titre {
+      font-family: var(--font-display);
       font-size: 1rem;
-      font-weight: 500;
+      font-style: italic;
+      color: rgba(10,14,42,0.5);
+      margin-bottom: 2rem;
+    }
+    .lettre-sep {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 2rem;
+    }
+    .lettre-sep .l { flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(201,168,76,0.5)); }
+    .lettre-sep .l.r { background: linear-gradient(to left, transparent, rgba(201,168,76,0.5)); }
+    .lettre-sep .d { width: 6px; height: 6px; background: var(--or); transform: rotate(45deg); }
+
+    .lettre-corps {
+      font-family: var(--font-display);
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      line-height: 2;
+      color: var(--nuit);
+      font-weight: 300;
+      position: relative;
+      z-index: 1;
+    }
+    .lettre-corps p { margin-bottom: 1.4em; }
+    .lettre-corps strong { font-weight: 600; color: #1a2060; }
+    .lettre-corps em { font-style: italic; color: #555; }
+
+    .lettre-signature {
+      margin-top: 2.5rem;
+      text-align: right;
+      position: relative;
+      z-index: 1;
+    }
+    .lettre-signature p {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--nuit);
+      margin-bottom: 0.3rem;
+    }
+    .lettre-signature .coeur {
+      font-size: 1.4rem;
+      animation: coeurBeat 1.5s ease-in-out infinite;
+    }
+    @keyframes coeurBeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    /* ============================================================
+       PAGE 3 — LIVRE INTERACTIF
+    ============================================================ */
+    #page-livre {
+      background: radial-gradient(ellipse at 30% 70%, #121840 0%, var(--nuit) 70%);
+      overflow: hidden;
+    }
+
+    .section-titre {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      font-weight: 300;
       letter-spacing: 0.06em;
-      cursor: pointer;
+      text-align: center;
+      color: var(--creme);
+      margin-bottom: 0.4rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .section-titre.visible { opacity: 1; transform: translateY(0); }
+    .section-titre span { color: var(--or); }
+
+    .section-sous-titre {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-style: italic;
+      color: rgba(247,243,236,0.5);
+      text-align: center;
+      margin-bottom: 3rem;
+      opacity: 0;
+      transition: opacity 0.8s ease 0.2s;
+    }
+    .section-sous-titre.visible { opacity: 1; }
+
+    /* Livre */
+    .livre-wrapper {
+      perspective: 1400px;
+      width: min(660px, 95vw);
+      margin: 0 auto;
+    }
+    .livre {
+      width: 100%;
+      position: relative;
+    }
+    /* Deux pages côte à côte */
+    .livre-pages {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      border-radius: 0 4px 4px 0;
+      min-height: 380px;
+    }
+    @media (max-width: 560px) {
+      .livre-pages { grid-template-columns: 1fr; }
+    }
+
+    .page-livre {
+      background: var(--creme);
+      padding: 2.5rem 2rem;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 8px 30px rgba(192,57,43,0.35);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      animation: fadeUp 1s 1.1s both;
+    }
+    .page-livre.gauche {
+      border-radius: 4px 0 0 4px;
+      border-right: 1px solid rgba(10,14,42,0.12);
+      background: linear-gradient(to right, #ede6d4, var(--creme));
+    }
+    .page-livre.droite {
+      border-radius: 0 4px 4px 0;
+      background: linear-gradient(to left, #ede6d4, var(--creme));
     }
 
-    .btn-surprise::before {
+    /* Numéro de page */
+    .page-num {
+      position: absolute;
+      bottom: 1rem;
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      color: rgba(10,14,42,0.3);
+      font-style: italic;
+    }
+    .page-livre.gauche .page-num { left: 1.5rem; }
+    .page-livre.droite .page-num { right: 1.5rem; }
+
+    /* Ombre pli central */
+    .livre-pages::after {
       content: '';
       position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .btn-surprise:hover {
-      transform: translateY(-3px) scale(1.03);
-      box-shadow: 0 14px 40px rgba(192,57,43,0.45);
-    }
-    .btn-surprise:hover::before { opacity: 1; }
-    .btn-surprise:active { transform: translateY(0) scale(0.98); }
-
-    .btn-icon {
-      font-size: 1.3rem;
-      animation: wiggle 2s 2s ease-in-out infinite;
-    }
-
-    /* Jasmin flottants */
-    .jasmin-float {
-      position: absolute;
-      font-size: clamp(1rem, 2.5vw, 1.6rem);
+      left: 50%; top: 0; bottom: 0;
+      width: 30px;
+      transform: translateX(-50%);
+      background: linear-gradient(to right, rgba(0,0,0,0.12), transparent 50%, rgba(0,0,0,0.06));
       pointer-events: none;
-      animation: floatAround linear infinite;
-      opacity: 0.7;
     }
 
-    /* ===========================
-       TRANSITION — ANIMATION CADEAU
-    =========================== */
-    #gift-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 999;
+    /* Contenu d'une page */
+    .page-icone {
+      font-size: 2rem;
+      margin-bottom: 0.8rem;
+    }
+    .page-livre h3 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--nuit);
+      margin-bottom: 0.6rem;
+    }
+    .page-livre p {
+      font-family: var(--font-display);
+      font-size: 0.98rem;
+      font-weight: 300;
+      color: rgba(10,14,42,0.75);
+      line-height: 1.75;
+    }
+    .page-citation {
+      margin-top: 1.2rem;
+      border-top: 1px solid rgba(201,168,76,0.3);
+      padding-top: 0.8rem;
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-style: italic;
+      color: rgba(10,14,42,0.5);
+    }
+
+    /* Navigation livre */
+    .livre-nav {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(255,250,248,0);
-      pointer-events: none;
-      opacity: 0;
+      gap: 2rem;
+      margin-top: 1.5rem;
     }
-
-    #gift-overlay.opening {
-      animation: overlayIn 0.5s forwards;
-      pointer-events: all;
-    }
-
-    #gift-overlay.revealed {
-      animation: overlayOut 0.8s 1.2s forwards;
-    }
-
-    .gift-box {
-      font-size: 8rem;
-      animation: none;
-      transform-origin: center;
-    }
-
-    #gift-overlay.opening .gift-box {
-      animation: giftPulse 1.2s ease-in-out;
-    }
-
-    /* ===========================
-       PAGE 2 — MESSAGE
-    =========================== */
-    #page-2 {
-      background: linear-gradient(160deg, #FBF4E3 0%, #FFFAF8 40%, #F9E4E2 100%);
-    }
-
-    #page-2::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image:
-        radial-gradient(circle at 10% 90%, rgba(212,175,106,0.1) 0%, transparent 40%),
-        radial-gradient(circle at 90% 10%, rgba(232,120,109,0.1) 0%, transparent 40%);
-      pointer-events: none;
-    }
-
-    .letter-container {
-      max-width: 680px;
-      width: 90%;
-      position: relative;
-      z-index: 2;
-      text-align: center;
-    }
-
-    .letter-badge {
-      display: inline-block;
-      padding: 0.4rem 1.2rem;
-      border: 1px solid var(--or);
-      border-radius: 30px;
-      font-size: 0.7rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--or);
-      margin-bottom: 1.8rem;
-      animation: fadeDown 0.8s 0.2s both;
-    }
-
-    .letter-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2rem, 5vw, 3.4rem);
-      font-weight: 300;
-      color: var(--texte);
-      margin-bottom: 2rem;
-      animation: fadeUp 0.8s 0.4s both;
-    }
-
-    .letter-title em { color: var(--rouge); font-style: italic; }
-
-    .letter-body {
-      font-size: clamp(0.95rem, 2vw, 1.08rem);
-      line-height: 1.95;
-      color: var(--texte-doux);
-      font-weight: 300;
-      text-align: left;
-      background: rgba(255,255,255,0.65);
-      border-left: 3px solid var(--or);
-      padding: 1.8rem 2rem;
-      border-radius: 0 16px 16px 0;
-      margin-bottom: 2rem;
-      backdrop-filter: blur(4px);
-      animation: fadeUp 0.8s 0.6s both;
-    }
-
-    .letter-body p { margin-bottom: 1.2rem; }
-    .letter-body p:last-child { margin-bottom: 0; }
-
-    .letter-signature {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: 1.5rem;
-      color: var(--rouge);
-      margin-bottom: 2.5rem;
-      animation: fadeUp 0.8s 0.8s both;
-    }
-
-    .btn-final {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.7rem;
-      padding: 0.9rem 2.2rem;
+    .livre-btn {
       background: transparent;
-      color: var(--or);
       border: 1.5px solid var(--or);
-      border-radius: 60px;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
+      color: var(--or);
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      padding: 0.4rem 1rem;
       cursor: pointer;
+      border-radius: 2px;
       transition: all 0.3s ease;
-      animation: fadeUp 0.8s 1s both;
+    }
+    .livre-btn:hover { background: var(--or); color: var(--nuit); }
+    .livre-btn:disabled { opacity: 0.3; cursor: default; }
+    #livre-page-info {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      color: rgba(247,243,236,0.5);
+      font-style: italic;
     }
 
-    .btn-final:hover {
-      background: var(--or);
-      color: #fff;
-      box-shadow: 0 8px 25px rgba(212,175,106,0.4);
-      transform: translateY(-2px);
+    /* Animation tournage de page */
+    .livre-pages {
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .livre-pages.turning {
+      opacity: 0;
+      transform: rotateY(10deg) scale(0.97);
     }
 
-    /* ===========================
-       PAGE 3 — FINALE
-    =========================== */
-    #page-3 {
-      background: linear-gradient(145deg, #1A0A08 0%, #3D1F1A 50%, #2A1008 100%);
-      color: #fff;
+    /* ============================================================
+       PAGE 4 — MUR DE MERCI
+    ============================================================ */
+    #page-mur {
+      background: linear-gradient(170deg, #0d1130 0%, #0A0E2A 100%);
     }
 
-    #page-3::before {
+    .cartes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      max-width: 900px;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .carte-merci {
+      background: rgba(247,243,236,0.04);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 8px;
+      padding: 1.8rem 1.5rem;
+      text-align: center;
+      cursor: default;
+      transition: all 0.4s ease;
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+      position: relative;
+      overflow: hidden;
+    }
+    .carte-merci.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    .carte-merci::before {
       content: '';
       position: absolute;
       inset: 0;
-      background-image:
-        radial-gradient(circle at 50% 40%, rgba(212,175,106,0.2) 0%, transparent 60%),
-        radial-gradient(circle at 80% 20%, rgba(192,57,43,0.15) 0%, transparent 40%),
-        radial-gradient(circle at 20% 80%, rgba(232,120,109,0.1) 0%, transparent 40%);
+      background: linear-gradient(135deg, rgba(201,168,76,0.06), rgba(242,191,205,0.06));
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .carte-merci:hover { border-color: var(--or); transform: translateY(-6px) scale(1.03); box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 20px rgba(201,168,76,0.1); }
+    .carte-merci:hover::before { opacity: 1; }
+
+    .carte-icone {
+      font-size: 2.2rem;
+      margin-bottom: 0.8rem;
+      display: block;
+      filter: drop-shadow(0 0 8px rgba(201,168,76,0.4));
+    }
+    .carte-merci h3 {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--or-light);
+      margin-bottom: 0.5rem;
+    }
+    .carte-merci p {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(247,243,236,0.6);
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       PAGE 5 — FINALE
+    ============================================================ */
+    #page-finale {
+      background: radial-gradient(ellipse at 50% 30%, #1a2060 0%, var(--nuit) 65%);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Canvas confettis & feux d'artifice */
+    #finale-canvas {
+      position: absolute;
+      inset: 0;
       pointer-events: none;
+      z-index: 0;
     }
 
     .finale-content {
       position: relative;
       z-index: 2;
-      text-align: center;
-      padding: 2rem;
-      max-width: 700px;
     }
 
-    .gold-ornament {
-      color: var(--or);
-      font-size: 2.5rem;
-      display: block;
-      margin-bottom: 1.5rem;
-      animation: glowPulse 3s ease-in-out infinite;
-    }
-
-    .finale-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2.5rem, 7vw, 5.5rem);
+    #finale-main {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 8vw, 6rem);
       font-weight: 300;
-      color: var(--or-clair);
-      line-height: 1.1;
-      margin-bottom: 1.5rem;
-      text-shadow: 0 0 40px rgba(212,175,106,0.5);
-    }
-
-    .finale-title strong {
-      display: block;
-      color: #fff;
-      font-style: italic;
-      font-weight: 300;
-    }
-
-    .star-row {
-      display: flex;
-      justify-content: center;
-      gap: 0.6rem;
-      margin: 1.5rem 0;
-    }
-
-    .star-row span {
-      color: var(--or);
-      font-size: 1.2rem;
-      animation: starTwinkle 2s ease-in-out infinite;
-    }
-    .star-row span:nth-child(2) { animation-delay: 0.3s; }
-    .star-row span:nth-child(3) { animation-delay: 0.6s; }
-    .star-row span:nth-child(4) { animation-delay: 0.9s; }
-    .star-row span:nth-child(5) { animation-delay: 1.2s; }
-
-    .finale-quote {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: clamp(1.1rem, 2.5vw, 1.45rem);
-      color: rgba(255,255,255,0.8);
-      line-height: 1.7;
-      margin-bottom: 2rem;
-      padding: 0 1rem;
-    }
-
-    .arabic-finale {
-      direction: rtl;
-      font-size: clamp(1.1rem, 3vw, 1.5rem);
-      color: var(--or);
       letter-spacing: 0.04em;
-      padding: 1rem 2rem;
-      border: 1px solid rgba(212,175,106,0.4);
-      border-radius: 12px;
-      display: inline-block;
-      margin-bottom: 2rem;
-      background: rgba(212,175,106,0.08);
-      animation: glowPulse 3s 0.5s ease-in-out infinite;
+      color: var(--blanc);
+      text-shadow: 0 0 40px rgba(201,168,76,0.4);
+      opacity: 0;
+      transition: opacity 1.2s ease;
     }
+    #finale-main.visible { opacity: 1; }
+    #finale-main .nom { color: var(--or-light); }
 
-    .typewriter-wrap {
-      font-family: 'Cormorant Garamond', serif;
+    #finale-sub {
+      font-family: var(--font-display);
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      font-weight: 300;
       font-style: italic;
-      font-size: clamp(1rem, 2.2vw, 1.3rem);
-      color: rgba(255,255,255,0.55);
-      min-height: 2em;
+      color: rgba(247,243,236,0.7);
+      margin: 1rem 0 2rem;
+      opacity: 0;
+      transition: opacity 1.2s ease 0.5s;
+    }
+    #finale-sub.visible { opacity: 1; }
+
+    #finale-anniv {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 5vw, 3.5rem);
+      font-weight: 600;
+      color: var(--or);
+      letter-spacing: 0.06em;
+      text-shadow: 0 0 30px rgba(201,168,76,0.5);
+      opacity: 0;
+      transition: opacity 1s ease 1s;
       margin-bottom: 2.5rem;
     }
+    #finale-anniv.visible { opacity: 1; }
 
+    /* Machine à écrire */
+    #typewriter-container {
+      max-width: 500px;
+      margin: 0 auto;
+      min-height: 60px;
+    }
+    #typewriter-text {
+      font-family: var(--font-display);
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      font-style: italic;
+      color: var(--rose);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    #typewriter-text.visible { opacity: 1; }
     .cursor-blink {
       display: inline-block;
       width: 2px;
       height: 1.1em;
-      background: var(--or);
+      background: var(--rose);
+      vertical-align: text-bottom;
       margin-left: 2px;
-      vertical-align: middle;
-      animation: blink 0.9s step-end infinite;
+      animation: blinkCursor 0.8s step-end infinite;
     }
-
-    .finale-heart {
-      font-size: 3.5rem;
-      display: block;
-      animation: heartbeatBig 1.5s ease-in-out infinite;
-      filter: drop-shadow(0 0 20px rgba(192,57,43,0.8));
-    }
-
-    /* ===========================
-       CANVAS CONFETTIS
-    =========================== */
-    #confetti-canvas {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 100;
-      opacity: 0;
-      transition: opacity 0.5s;
-    }
-
-    #confetti-canvas.active { opacity: 1; }
-
-    /* ===========================
-       ANIMATIONS CSS
-    =========================== */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(28px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      14%       { transform: scale(1.25); }
-      28%       { transform: scale(1); }
-      42%       { transform: scale(1.15); }
-    }
-    @keyframes heartbeatBig {
-      0%, 100% { transform: scale(1); }
-      14%       { transform: scale(1.3); }
-      28%       { transform: scale(1); }
-      42%       { transform: scale(1.2); }
-    }
-    @keyframes wiggle {
-      0%, 100% { transform: rotate(0deg); }
-      25%       { transform: rotate(-15deg); }
-      75%       { transform: rotate(15deg); }
-    }
-    @keyframes floatAround {
-      0%   { transform: translateY(0) rotate(0deg);   opacity: 0.6; }
-      50%  { transform: translateY(-30px) rotate(20deg); opacity: 0.9; }
-      100% { transform: translateY(0) rotate(0deg);   opacity: 0.6; }
-    }
-    @keyframes borderGlow {
-      from { box-shadow: inset 0 0 20px rgba(212,175,106,0.05); }
-      to   { box-shadow: inset 0 0 60px rgba(212,175,106,0.12); }
-    }
-    @keyframes overlayIn {
-      0%   { opacity: 0; background: rgba(255,250,248,0); }
-      40%  { opacity: 1; background: rgba(255,250,248,0.95); }
-      100% { opacity: 1; background: rgba(255,250,248,0.95); }
-    }
-    @keyframes overlayOut {
-      from { opacity: 1; }
-      to   { opacity: 0; pointer-events: none; }
-    }
-    @keyframes giftPulse {
-      0%   { transform: scale(1) rotate(0deg); }
-      20%  { transform: scale(1.3) rotate(-5deg); }
-      40%  { transform: scale(0.9) rotate(5deg); }
-      60%  { transform: scale(1.4) rotate(-3deg); }
-      80%  { transform: scale(1.1) rotate(2deg); }
-      100% { transform: scale(1) rotate(0deg); }
-    }
-    @keyframes glowPulse {
-      0%, 100% { text-shadow: 0 0 10px rgba(212,175,106,0.3); }
-      50%       { text-shadow: 0 0 30px rgba(212,175,106,0.7), 0 0 60px rgba(212,175,106,0.3); }
-    }
-    @keyframes starTwinkle {
-      0%, 100% { opacity: 1;   transform: scale(1); }
-      50%       { opacity: 0.4; transform: scale(0.7); }
-    }
-    @keyframes blink {
+    @keyframes blinkCursor {
       0%, 100% { opacity: 1; }
       50%       { opacity: 0; }
     }
-    @keyframes pageSlideIn {
-      from { opacity: 0; transform: translateY(40px); }
+
+    /* Étoiles finales animées */
+    .star-finale {
+      position: absolute;
+      width: 4px; height: 4px;
+      background: var(--or);
+      border-radius: 50%;
+      animation: starFloat 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes starFloat {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.8; }
+      50% { transform: translateY(-20px) scale(1.3); opacity: 1; }
+    }
+
+    /* ============================================================
+       UTILITAIRES
+    ============================================================ */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
 
-    /* ===========================
-       RESPONSIVE
-    =========================== */
+    /* Scrollbar élégante */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--nuit); }
+    ::-webkit-scrollbar-thumb { background: var(--or); border-radius: 3px; }
+
+    /* ============================================================
+       RESPONSIVE MOBILE
+    ============================================================ */
     @media (max-width: 600px) {
-      .border-decoration { inset: 10px; }
-      .corner { width: 55px; height: 55px; }
-      .corner.tl { top: 8px;    left: 8px; }
-      .corner.tr { top: 8px;    right: 8px; }
-      .corner.bl { bottom: 8px; left: 8px; }
-      .corner.br { bottom: 8px; right: 8px; }
-      .letter-body { padding: 1.2rem 1rem; }
+      .lettre-container::after { display: none; }
+      .cartes-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+      .carte-merci { padding: 1.2rem 1rem; }
     }
-
-    /* Scroll arrow hint */
-    .scroll-hint {
-      position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: var(--or);
-      font-size: 1.4rem;
-      animation: bounceDown 2s 2s ease-in-out infinite;
-      opacity: 0.6;
-    }
-    @keyframes bounceDown {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50%       { transform: translateX(-50%) translateY(8px); }
+    @media (max-width: 380px) {
+      .cartes-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-<!-- ==========================================
-     CANVAS CONFETTIS
-========================================== -->
-<canvas id="confetti-canvas"></canvas>
+<!-- ============================================================
+     CANVAS PARTICULES FLOTTANTES (plumes, étoiles, pages)
+============================================================ -->
+<canvas id="particle-canvas"></canvas>
 
-<!-- ==========================================
-     OVERLAY TRANSITION CADEAU
-========================================== -->
-<div id="gift-overlay">
-  <div class="gift-box">🎁</div>
+<!-- OVERLAY TRANSITION ENVELOPPE -->
+<div id="transition-overlay">
+  <div id="envelope-wrap">
+    <div class="envelope" id="envelope">
+      <div class="env-body">
+        <div class="env-letter">Lettre pour Mme André ✨</div>
+        <div class="env-flap"></div>
+      </div>
+    </div>
+    <div class="flying-pages" id="flying-pages"></div>
+  </div>
 </div>
 
-<!-- ==========================================
+<!-- NAVIGATION POINTS -->
+<nav id="nav-dots" aria-label="Navigation par sections">
+  <div class="nav-dot active" data-page="0" title="Accueil" tabindex="0"></div>
+  <div class="nav-dot" data-page="1" title="Lettre" tabindex="0"></div>
+  <div class="nav-dot" data-page="2" title="Livre des souvenirs" tabindex="0"></div>
+  <div class="nav-dot" data-page="3" title="Mur de merci" tabindex="0"></div>
+  <div class="nav-dot" data-page="4" title="Finale" tabindex="0"></div>
+</nav>
+
+<!-- ============================================================
      PAGE 1 — ACCUEIL
-========================================== -->
-<section id="page-1" class="page active">
-
-  <!-- Bordure dorée -->
-  <div class="border-decoration"></div>
-
-  <!-- Coins arabesques SVG -->
-  <svg class="corner tl" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M5 5 Q5 40 40 40 Q5 40 5 75" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    <path d="M5 5 Q40 5 40 40 Q40 5 75 5" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    <circle cx="5" cy="5" r="3" fill="#D4AF6A"/>
-    <path d="M20 5 Q20 20 5 20" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
-    <path d="M5 20 Q20 20 20 35" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
-  </svg>
-  <svg class="corner tr" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M5 5 Q5 40 40 40 Q5 40 5 75" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    <path d="M5 5 Q40 5 40 40 Q40 5 75 5" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    <circle cx="5" cy="5" r="3" fill="#D4AF6A"/>
-    <path d="M20 5 Q20 20 5 20" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
-    <path d="M5 20 Q20 20 20 35" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
-  </svg>
-  <svg class="corner bl" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M5 5 Q5 40 40 40 Q5 40 5 75" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    <path d="M5 5 Q40 5 40 40 Q40 5 75 5" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    <circle cx="5" cy="5" r="3" fill="#D4AF6A"/>
-    <path d="M20 5 Q20 20 5 20" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
-    <path d="M5 20 Q20 20 20 35" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
-  </svg>
-  <svg class="corner br" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M5 5 Q5 40 40 40 Q5 40 5 75" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    <path d="M5 5 Q40 5 40 40 Q40 5 75 5" stroke="#D4AF6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    <circle cx="5" cy="5" r="3" fill="#D4AF6A"/>
-    <path d="M20 5 Q20 20 5 20" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
-    <path d="M5 20 Q20 20 20 35" stroke="#D4AF6A" stroke-width="0.8" fill="none" opacity="0.6"/>
-  </svg>
-
-  <!-- Contenu -->
-  <div class="hero-content">
-    <p class="arabic-top">يا أمي، أنتِ نور حياتي ✨</p>
-
-    <h1 class="main-title">
-      Joyeux<br/>
-      <em>Anniversaire</em>
-    </h1>
-
-    <div class="heart-divider">
-      <span></span>
-      <span class="heart-icon">♥</span>
-      <span></span>
-    </div>
-
-    <p class="subtitle">Pour la plus belle des mamans</p>
-
-    <button class="btn-surprise" id="btn-open">
-      <span class="btn-icon">🎁</span>
-      Ouvrir la surprise
-    </button>
+============================================================ -->
+<section class="section" id="page-accueil">
+  <div class="ornament-line" style="animation-delay:1.2s">
+    <div class="line"></div>
+    <div class="diamond"></div>
+    <div class="line"></div>
   </div>
 
-  <!-- Flèche bas -->
-  <div class="scroll-hint">↓</div>
+  <h1 id="titre-principal" aria-label="Joyeux Anniversaire Mme André"></h1>
+
+  <div class="ornament-line" style="animation-delay:2.4s">
+    <div class="line"></div>
+    <div class="diamond"></div>
+    <div class="line"></div>
+  </div>
+
+  <p id="sous-titre">Merci pour cette année inoubliable</p>
+
+  <blockquote id="citation-accueil">
+    « L'enseignement est un métier qui enseigne tous les autres. »
+    <cite>— Victor Hugo</cite>
+  </blockquote>
+
+  <button id="btn-ouvrir" onclick="ouvrirEnveloppe()">
+    Ouvrir le message
+  </button>
 </section>
 
-<!-- ==========================================
-     PAGE 2 — MESSAGE / LETTRE
-========================================== -->
-<section id="page-2" class="page">
-  <div class="letter-container">
-    <span class="letter-badge">💌 Une lettre pour toi</span>
+<!-- ============================================================
+     PAGE 2 — LETTRE DE REMERCIEMENT
+============================================================ -->
+<section class="section" id="page-lettre">
+  <div class="lettre-container" id="lettre-container">
 
-    <h2 class="letter-title">
-      Ma chère<br/><em>Maman</em>
+    <!-- Lignes de papier décoratives (générées en JS) -->
+    <div class="lettre-lines" id="lettre-lines"></div>
+
+    <p class="lettre-date">Juin 2025</p>
+
+    <h2 class="lettre-titre">
+      Chère <span class="lettre-titre-or">Mme André</span>,
     </h2>
+    <p class="lettre-sous-titre">Une lettre de toute la classe, avec tout notre cœur.</p>
 
-    <div class="letter-body">
+    <div class="lettre-sep"><div class="l"></div><div class="d"></div><div class="l r"></div></div>
+
+    <div class="lettre-corps">
       <p>
-        Il y a des mots qu'on garde trop longtemps au fond du cœur, pensant
-        qu'il y aura toujours un autre moment pour les dire. Aujourd'hui, je
-        refuse de les garder plus longtemps.
+        Au moment où cette année se referme doucement, nous voulions vous offrir quelque chose que
+        ni une note, ni un diplôme ne pourrait exprimer : nos remerciements les plus sincères,
+        écrits avec tout ce que nous avons de gratitude dans le cœur.
       </p>
       <p>
-        Tu es la première voix que j'ai entendue, la première main qui m'a
-        tenu, le premier amour que j'ai connu. Tu m'as appris ce que signifie
-        donner sans jamais compter, aimer sans condition, et sourire même dans
-        les tempêtes.
+        Vous étiez là, <strong>tous les jours, sans exception</strong>, avec ce sourire que rien ne semblait pouvoir
+        effacer. Dans les matins difficiles, dans les après-midi où la classe bourdonnait et testait la
+        patience d'une sainte, vous avez toujours choisi <em>la bienveillance</em>. Ce n'est pas une petite chose.
+        C'est une leçon que nous n'oublierons pas.
       </p>
       <p>
-        Je me souviens de tout — de ton parfum le matin, de tes mains qui
-        préparaient le dîner, de ta voix qui chassait mes peurs la nuit. Ces
-        petites choses, ce sont les plus grandes richesses de ma vie.
+        Il y a eu des jours où nous n'étions pas faciles. Des jours où l'agitation prenait toute la place,
+        où les voix montaient, où la concentration s'égarait. Et vous, <strong>vous êtes restée douce</strong>.
+        Jamais un mot de trop, jamais une colère injuste. Seulement cette patience infinie qui forçait
+        le respect, même chez les plus dissipés d'entre nous.
       </p>
       <p>
-        En ce jour si spécial, je veux que tu saches : tout ce que je suis,
-        je le dois à toi. Ma force, ma douceur, ma résilience — c'est ton
-        héritage. Et je suis infiniment fier·e de te porter en moi chaque jour.
+        Vous avez compris quelque chose que beaucoup ignorent : que derrière chaque élève turbulent,
+        il y a une personne qui a besoin d'être vue. Vous nous avez <strong>vus</strong>. Et ça comptait
+        plus que vous ne le pensez.
       </p>
       <p>
-        Que cette nouvelle année de ta vie soit illuminée de joie, de santé
-        et de tout l'amour que tu mérites — car tu le mérites plus que
-        quiconque au monde. 🌸
+        Nous pensons aussi à ces <strong>trois sorties</strong> que vous avez organisées pour nous —
+        avec tout ce que cela implique d'heures invisibles, de formulaires, de coordination et
+        d'énergie. Ces moments hors des murs de la classe nous ont rassemblés différemment,
+        plus librement. Ils resteront parmi nos meilleurs souvenirs de l'année.
+      </p>
+      <p>
+        Grâce à vous, <em>le français n'était pas une matière, c'était une aventure.</em>
+        Vous nous avez appris à lire entre les lignes, à chercher les mots justes, à nous exprimer
+        avec clarté et avec âme. Certains d'entre nous ont découvert qu'ils aimaient écrire —
+        et c'est entièrement votre faute.
+      </p>
+      <p>
+        Alors, en ce jour particulier, nous voulons que vous sachiez une chose simple et vraie :
+        <strong>vous avez marqué cette année</strong>. Profondément. Et nous vous en sommes
+        infiniment reconnaissants.
       </p>
     </div>
 
-    <p class="letter-signature">Avec tout l'amour du monde, ton enfant ❤️</p>
+    <div class="lettre-sep" style="margin-top:2rem"><div class="l"></div><div class="d"></div><div class="l r"></div></div>
 
-    <button class="btn-final" id="btn-finale">
-      <span>Voir la page finale</span>
-      <span>✨</span>
-    </button>
+    <div class="lettre-signature">
+      <p>Avec toute notre admiration et notre affection,</p>
+      <p><strong>De la part de vos élèves</strong> <span class="coeur">❤️</span></p>
+    </div>
   </div>
 </section>
 
-<!-- ==========================================
-     PAGE 3 — FINALE
-========================================== -->
-<section id="page-3" class="page">
+<!-- ============================================================
+     PAGE 3 — LIVRE DES SOUVENIRS
+============================================================ -->
+<section class="section" id="page-livre">
+  <h2 class="section-titre" data-animtarget>Le Livre des <span>Souvenirs</span></h2>
+  <p class="section-sous-titre" data-animtarget>Tournez les pages… chaque chapitre vous appartient.</p>
+
+  <div class="livre-wrapper">
+    <div class="livre">
+      <div class="livre-pages" id="livre-pages">
+        <!-- Rempli dynamiquement par JavaScript -->
+      </div>
+    </div>
+    <div class="livre-nav">
+      <button class="livre-btn" id="btn-prev" onclick="tournerPage(-1)" disabled>‹</button>
+      <span id="livre-page-info">Page 1 / 4</span>
+      <button class="livre-btn" id="btn-next" onclick="tournerPage(1)">›</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PAGE 4 — MUR DE MERCI
+============================================================ -->
+<section class="section" id="page-mur">
+  <h2 class="section-titre" data-animtarget>Le Mur des <span>Merci</span></h2>
+  <p class="section-sous-titre" data-animtarget>Chaque mot vient du cœur.</p>
+
+  <div class="cartes-grid" id="cartes-grid">
+    <!-- Rempli par JavaScript -->
+  </div>
+</section>
+
+<!-- ============================================================
+     PAGE 5 — FINALE
+============================================================ -->
+<section class="section" id="page-finale">
+  <canvas id="finale-canvas"></canvas>
+
   <div class="finale-content">
+    <h2 id="finale-main">Merci <span class="nom">Mme André</span></h2>
+    <p id="finale-sub">Vous avez rendu cette année meilleure.</p>
+    <p id="finale-anniv">Joyeux anniversaire 🎂</p>
 
-    <span class="gold-ornament">❋</span>
-
-    <h2 class="finale-title">
-      Bonne<br/>
-      <strong>Fête Maman</strong>
-    </h2>
-
-    <div class="star-row">
-      <span>✦</span><span>✦</span><span>✦</span><span>✦</span><span>✦</span>
+    <div id="typewriter-container">
+      <p id="typewriter-text"><span id="tw-phrase"></span><span class="cursor-blink"></span></p>
     </div>
-
-    <p class="finale-quote">
-      « Il n'existe pas de mot assez grand pour décrire l'amour d'une mère —
-      c'est l'univers entier contenu dans deux bras ouverts. »
-    </p>
-
-    <div class="arabic-finale">
-      كل عام وأنتِ بخير يا أمّي ❤️
-    </div>
-
-    <div class="typewriter-wrap">
-      <span id="typewriter-text"></span><span class="cursor-blink"></span>
-    </div>
-
-    <span class="finale-heart">❤️</span>
   </div>
 </section>
 
 
-<!-- ==========================================
+<!-- ============================================================
      JAVASCRIPT
-========================================== -->
+============================================================ -->
 <script>
-  /* ----------------------------------------
-     JASMIN FLOTTANTS — Page 1
-  ---------------------------------------- */
-  const jasmins = ['🌼','🌸','✿','🌺','❀','💮'];
-  const p1 = document.getElementById('page-1');
+/* ============================================================
+   1. PARTICULES FLOTTANTES (plumes, étoiles, pages de livre)
+============================================================ */
+(function initParticles() {
+  const canvas = document.getElementById('particle-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H;
+  const particles = [];
+  const NB = 60;
 
-  for (let i = 0; i < 18; i++) {
-    const el = document.createElement('span');
-    el.classList.add('jasmin-float');
-    el.textContent = jasmins[Math.floor(Math.random() * jasmins.length)];
-    const size = 0.8 + Math.random() * 1.2;
-    el.style.cssText = `
-      left: ${Math.random() * 100}%;
-      top:  ${Math.random() * 100}%;
-      font-size: ${size}rem;
-      animation-duration: ${4 + Math.random() * 6}s;
-      animation-delay:    ${Math.random() * -8}s;
-    `;
-    p1.appendChild(el);
+  // Types de symboles : plume ✒, étoile ★, page ❧, lettre ✉
+  const symbols = ['✒', '★', '❧', '✦', '❋', '◈'];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Créer les particules
+  for (let i = 0; i < NB; i++) {
+    particles.push({
+      x: Math.random() * 2000 - 500,
+      y: Math.random() * 2000 - 200,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: -Math.random() * 0.4 - 0.1,
+      symbol: symbols[Math.floor(Math.random() * symbols.length)],
+      size: Math.random() * 10 + 6,
+      opacity: Math.random() * 0.15 + 0.04,
+      rot: Math.random() * Math.PI * 2,
+      vrot: (Math.random() - 0.5) * 0.005,
+      color: Math.random() > 0.5 ? '#C9A84C' : '#F7F3EC',
+    });
   }
 
-  /* ----------------------------------------
-     NAVIGATION
-  ---------------------------------------- */
-  function showPage(id, delay = 0) {
-    setTimeout(() => {
-      document.querySelectorAll('.page').forEach(p => {
-        p.style.display = 'none';
-        p.classList.remove('active');
-      });
-      const target = document.getElementById(id);
-      target.style.display = 'flex';
-      // Force reflow
-      void target.offsetWidth;
-      target.classList.add('active');
-      target.style.animation = 'pageSlideIn 0.8s ease both';
-      window.scrollTo(0, 0);
-    }, delay);
-  }
-
-  // Activer la page 1 au chargement
-  document.addEventListener('DOMContentLoaded', () => {
-    const p1El = document.getElementById('page-1');
-    p1El.style.display = 'flex';
-    p1El.classList.add('active');
-  });
-
-  /* ----------------------------------------
-     BOUTON SURPRISE — Animation cadeau
-  ---------------------------------------- */
-  document.getElementById('btn-open').addEventListener('click', () => {
-    const overlay = document.getElementById('gift-overlay');
-
-    // Étape 1 : afficher l'overlay avec animation cadeau
-    overlay.classList.add('opening');
-
-    // Étape 2 : après animation, aller à la page 2
-    setTimeout(() => {
-      overlay.classList.add('revealed');
-      showPage('page-2');
-    }, 1400);
-
-    // Étape 3 : retirer l'overlay après la transition
-    setTimeout(() => {
-      overlay.classList.remove('opening', 'revealed');
-    }, 2500);
-  });
-
-  /* ----------------------------------------
-     BOUTON FINALE
-  ---------------------------------------- */
-  document.getElementById('btn-finale').addEventListener('click', () => {
-    showPage('page-3');
-    setTimeout(() => {
-      launchConfetti();
-      startTypewriter();
-    }, 600);
-  });
-
-  /* ----------------------------------------
-     TYPEWRITER EFFECT — Page 3
-  ---------------------------------------- */
-  const phrases = [
-    "Je t'aime plus que tous les mots du monde...",
-    "Merci d'exister, Maman 🌸",
-    "Tu es ma lumière, mon foyer, mon éternel refuge...",
-    "Bonne fête, la plus belle des mamans ❤️"
-  ];
-
-  let phraseIndex = 0;
-  let charIndex = 0;
-  let isDeleting = false;
-  let typeTimer = null;
-
-  function startTypewriter() {
-    const el = document.getElementById('typewriter-text');
-    el.textContent = '';
-    phraseIndex = 0;
-    charIndex = 0;
-    isDeleting = false;
-    if (typeTimer) clearTimeout(typeTimer);
-    typeLoop();
-  }
-
-  function typeLoop() {
-    const el = document.getElementById('typewriter-text');
-    const current = phrases[phraseIndex];
-
-    if (!isDeleting) {
-      el.textContent = current.slice(0, charIndex + 1);
-      charIndex++;
-      if (charIndex === current.length) {
-        isDeleting = true;
-        typeTimer = setTimeout(typeLoop, 2200);
-        return;
-      }
-    } else {
-      el.textContent = current.slice(0, charIndex - 1);
-      charIndex--;
-      if (charIndex === 0) {
-        isDeleting = false;
-        phraseIndex = (phraseIndex + 1) % phrases.length;
-        typeTimer = setTimeout(typeLoop, 500);
-        return;
-      }
-    }
-
-    const speed = isDeleting ? 40 : 65;
-    typeTimer = setTimeout(typeLoop, speed);
-  }
-
-  /* ----------------------------------------
-     CONFETTIS — Canvas JS
-  ---------------------------------------- */
-  const canvas = document.getElementById('confetti-canvas');
-  const ctx = canvas.getContext('2d');
-  let confettiParticles = [];
-  let confettiAnimId = null;
-
-  const COLORS = [
-    '#C0392B', '#E8786D', '#F5C6C2',
-    '#D4AF6A', '#F0D9A8', '#FFFAF8',
-    '#F9E4E2', '#A93226', '#FAD7A0'
-  ];
-
-  function resizeCanvas() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
-
-  class Particle {
-    constructor() { this.reset(true); }
-
-    reset(initial = false) {
-      this.x = Math.random() * canvas.width;
-      this.y = initial ? Math.random() * -canvas.height : -10;
-      this.w = 6 + Math.random() * 8;
-      this.h = 3 + Math.random() * 5;
-      this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-      this.rot = Math.random() * Math.PI * 2;
-      this.vx = (Math.random() - 0.5) * 2.5;
-      this.vy = 1.5 + Math.random() * 3;
-      this.vr = (Math.random() - 0.5) * 0.12;
-      this.opacity = 0.75 + Math.random() * 0.25;
-      this.shape = Math.random() < 0.3 ? 'circle' : 'rect';
-    }
-
-    update() {
-      this.x  += this.vx;
-      this.y  += this.vy;
-      this.rot += this.vr;
-      if (this.y > canvas.height + 20) this.reset();
-    }
-
-    draw() {
+  function drawParticles() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
       ctx.save();
-      ctx.globalAlpha = this.opacity;
-      ctx.translate(this.x, this.y);
-      ctx.rotate(this.rot);
-      ctx.fillStyle = this.color;
-      if (this.shape === 'circle') {
-        ctx.beginPath();
-        ctx.arc(0, 0, this.w / 2, 0, Math.PI * 2);
-        ctx.fill();
-      } else {
-        ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
-      }
+      ctx.globalAlpha = p.opacity;
+      ctx.fillStyle   = p.color;
+      ctx.font        = `${p.size}px serif`;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillText(p.symbol, 0, 0);
       ctx.restore();
-    }
+
+      // Mouvement
+      p.x   += p.vx;
+      p.y   += p.vy;
+      p.rot += p.vrot;
+
+      // Remise en bas quand sort par le haut
+      if (p.y < -50) {
+        p.y = H + 50;
+        p.x = Math.random() * W;
+      }
+      if (p.x < -100) p.x = W + 50;
+      if (p.x > W + 100) p.x = -50;
+    });
+    requestAnimationFrame(drawParticles);
   }
+  drawParticles();
+})();
 
-  function launchConfetti() {
-    canvas.classList.add('active');
-    confettiParticles = Array.from({ length: 160 }, () => new Particle());
 
-    if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+/* ============================================================
+   2. ANIMATION DU TITRE LETTRE PAR LETTRE
+============================================================ */
+(function animeTitre() {
+  const titre  = document.getElementById('titre-principal');
+  const texte  = 'Joyeux Anniversaire Mme André';
+  let   delai  = 0.4; // délai de départ (après le load)
+  const STEP   = 0.06;
 
-    let tick = 0;
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      confettiParticles.forEach(p => { p.update(); p.draw(); });
-      tick++;
-      // Arrêter après ~8 secondes
-      if (tick < 480) {
-        confettiAnimId = requestAnimationFrame(animate);
-      } else {
-        canvas.classList.remove('active');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+  texte.split('').forEach((char, i) => {
+    const span = document.createElement('span');
+    span.className = 'lettre';
+    // Espace insécable pour les espaces
+    span.textContent = char === ' ' ? '\u00A0' : char;
+    span.style.animationDelay = `${delai}s`;
+    // Effet doré sur certaines lettres
+    if (char === 'A' && i > 10) span.style.color = '#C9A84C';
+    titre.appendChild(span);
+    delai += STEP;
+  });
+})();
+
+
+/* ============================================================
+   3. NAVIGATION DOTS + SCROLL SNAP
+============================================================ */
+const sections  = ['page-accueil', 'page-lettre', 'page-livre', 'page-mur', 'page-finale'];
+const navDots   = document.querySelectorAll('.nav-dot');
+let   activeIdx = 0;
+
+navDots.forEach(dot => {
+  dot.addEventListener('click', () => scrollToPage(parseInt(dot.dataset.page)));
+  dot.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') scrollToPage(parseInt(dot.dataset.page));
+  });
+});
+
+function scrollToPage(idx) {
+  const el = document.getElementById(sections[idx]);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+function updateNavDots(idx) {
+  navDots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  activeIdx = idx;
+}
+
+// Intersection Observer pour détecter la section active
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const idx = sections.indexOf(entry.target.id);
+      if (idx !== -1) {
+        updateNavDots(idx);
+        triggerSectionAnimation(entry.target.id);
       }
     }
-    animate();
-  }
-</script>
+  });
+}, { threshold: 0.4 });
 
+sections.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) observer.observe(el);
+});
+
+
+/* ============================================================
+   4. ANIMATIONS DES SECTIONS
+============================================================ */
+const animationsDeclenche = new Set();
+
+function triggerSectionAnimation(id) {
+  if (animationsDeclenche.has(id)) return;
+  animationsDeclenche.add(id);
+
+  if (id === 'page-lettre')  animerLettre();
+  if (id === 'page-livre')   initLivre();
+  if (id === 'page-mur')     animerMur();
+  if (id === 'page-finale')  animerFinale();
+
+  // Titres de sections (data-animtarget)
+  const section = document.getElementById(id);
+  if (section) {
+    section.querySelectorAll('[data-animtarget]').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), i * 200);
+    });
+  }
+}
+
+// Observer générique pour les sous-éléments
+const obsGeneral = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('[data-animtarget]').forEach(el => obsGeneral.observe(el));
+
+
+/* ============================================================
+   5. ANIMATION ENVELOPPE (transition)
+============================================================ */
+function ouvrirEnveloppe() {
+  const overlay  = document.getElementById('transition-overlay');
+  const envelope = document.getElementById('envelope');
+  const flyPages = document.getElementById('flying-pages');
+
+  // Afficher l'overlay
+  overlay.classList.add('active');
+
+  // Ouvrir l'enveloppe après un court délai
+  setTimeout(() => {
+    envelope.classList.add('open');
+
+    // Créer des pages volantes
+    for (let i = 0; i < 8; i++) {
+      const page = document.createElement('div');
+      page.className = 'flying-page';
+      const tx = (Math.random() - 0.5) * 400;
+      const ty = -(Math.random() * 300 + 100);
+      const rot = (Math.random() - 0.5) * 180;
+      page.style.cssText = `
+        left: ${40 + Math.random() * 20}%;
+        top: ${20 + Math.random() * 20}%;
+        --tx: ${tx}px;
+        --ty: ${ty}px;
+        --rot: ${rot}deg;
+        animation-delay: ${i * 0.1}s;
+      `;
+      flyPages.appendChild(page);
+    }
+
+    // Naviguer vers la page lettre
+    setTimeout(() => {
+      overlay.classList.remove('active');
+      // Vider les pages volantes
+      setTimeout(() => flyPages.innerHTML = '', 500);
+      scrollToPage(1);
+    }, 1600);
+  }, 400);
+}
+
+
+/* ============================================================
+   6. LETTRE — LIGNES DE PAPIER
+============================================================ */
+function animerLettre() {
+  // Lignes horizontales décoratives
+  const container = document.getElementById('lettre-lines');
+  for (let i = 0; i < 25; i++) {
+    const line = document.createElement('span');
+    line.style.top = `${3 + i * 4.2}%`;
+    container.appendChild(line);
+  }
+  // Apparition de la lettre
+  setTimeout(() => {
+    document.getElementById('lettre-container').classList.add('visible');
+  }, 200);
+}
+
+
+/* ============================================================
+   7. LIVRE DES SOUVENIRS
+============================================================ */
+const livreData = [
+  {
+    gauche: {
+      icone: '📚',
+      titre: 'Le début de l\'année',
+      texte: 'Nous sommes entrés dans votre classe avec un peu d\'appréhension. Et dès les premières minutes, quelque chose dans votre façon d\'être nous a mis à l\'aise. La bienveillance n\'a pas besoin de se présenter — elle se ressent.',
+      citation: '« Enseigner, c\'est apprendre deux fois. » — Joseph Joubert',
+    },
+    droite: {
+      icone: '🌱',
+      titre: 'La confiance retrouvée',
+      texte: 'Certains d\'entre nous avaient peur de parler, peur de se tromper. Vous avez fait de l\'erreur non pas une honte, mais une étape. Vous nous avez appris que le courage de s\'exprimer est déjà une réussite.',
+      citation: '« Il faut toujours viser la lune, car même en cas d\'échec, on atterrit dans les étoiles. »',
+    },
+  },
+  {
+    gauche: {
+      icone: '🚌',
+      titre: 'Les trois sorties',
+      texte: 'Chaque sortie que vous avez organisée était une fenêtre ouverte sur le monde. Ces moments dehors, ensemble, ont créé des liens que quatre murs n\'auraient jamais pu forger. Merci pour ces heures libres et vivantes.',
+      citation: '« Le voyage est une découverte de soi autant qu\'une découverte du monde. »',
+    },
+    droite: {
+      icone: '✏️',
+      titre: 'Les mots qui restent',
+      texte: 'Vous nous avez appris que les mots ont du poids. Que bien écrire, bien parler, c\'est se donner les moyens d\'être entendu. Ces leçons-là dépassent le cours de français — elles nous accompagneront partout.',
+      citation: '« Les mots sont des fenêtres, ou bien ce sont des murs. » — Marshall Rosenberg',
+    },
+  },
+  {
+    gauche: {
+      icone: '🕊️',
+      titre: 'La patience infinie',
+      texte: 'Il y avait des jours difficiles. Des jours où la classe n\'était pas à son meilleur. Vous n\'avez jamais élevé la voix plus que nécessaire. Vous avez tenu bon, avec cette douceur tranquille qui force le respect.',
+      citation: '« La patience est la compagne de la sagesse. » — Saint Augustin',
+    },
+    droite: {
+      icone: '🌟',
+      titre: 'Ce que vous avez semé',
+      texte: 'On dit que les grands professeurs ne se souviennent pas de tous leurs élèves. Mais chaque élève se souvient des grands professeurs. Vous faites partie de ceux dont on parle encore des années plus tard.',
+      citation: '« Un bon enseignant allume une flamme qui ne s\'éteint jamais. »',
+    },
+  },
+  {
+    gauche: {
+      icone: '💫',
+      titre: 'Votre bonne humeur',
+      texte: 'Cette énergie que vous apportiez le matin, même dans les jours gris, était contagieuse. Vous nous avez montré que l\'enthousiasme est un choix, et que ce choix change tout. C\'est un cadeau précieux.',
+      citation: '« Le bonheur n\'est pas au bout du chemin, il est le chemin lui-même. »',
+    },
+    droite: {
+      icone: '❤️',
+      titre: 'Merci, du fond du cœur',
+      texte: 'Cette page est la dernière du livre — mais pas la dernière de l\'histoire que vous avez contribué à écrire en nous. Merci pour chaque moment, chaque attention, chaque encouragement discret. Merci infiniment.',
+      citation: '« Certaines personnes entrent dans notre vie et nous laissent plus grands qu\'avant. »',
+    },
+  },
+];
+
+let livrePageActuelle = 0;
+
+function initLivre() {
+  afficherPageLivre(0);
+}
+
+function afficherPageLivre(idx) {
+  const container = document.getElementById('livre-pages');
+  const data = livreData[idx];
+
+  container.innerHTML = `
+    <div class="page-livre gauche">
+      <div class="page-icone">${data.gauche.icone}</div>
+      <h3>${data.gauche.titre}</h3>
+      <p>${data.gauche.texte}</p>
+      <p class="page-citation">${data.gauche.citation}</p>
+      <span class="page-num">${idx * 2 + 1}</span>
+    </div>
+    <div class="page-livre droite">
+      <div class="page-icone">${data.droite.icone}</div>
+      <h3>${data.droite.titre}</h3>
+      <p>${data.droite.texte}</p>
+      <p class="page-citation">${data.droite.citation}</p>
+      <span class="page-num">${idx * 2 + 2}</span>
+    </div>
+  `;
+
+  document.getElementById('livre-page-info').textContent = `Page ${idx + 1} / ${livreData.length}`;
+  document.getElementById('btn-prev').disabled = idx === 0;
+  document.getElementById('btn-next').disabled = idx === livreData.length - 1;
+}
+
+function tournerPage(dir) {
+  const container = document.getElementById('livre-pages');
+  container.classList.add('turning');
+  setTimeout(() => {
+    livrePageActuelle = Math.max(0, Math.min(livreData.length - 1, livrePageActuelle + dir));
+    afficherPageLivre(livrePageActuelle);
+    container.classList.remove('turning');
+  }, 350);
+}
+
+
+/* ============================================================
+   8. MUR DE MERCI — CARTES
+============================================================ */
+const cartesData = [
+  { icone: '🕊️', titre: 'Merci pour votre patience', texte: 'Même dans les moments difficiles, vous avez toujours gardé votre calme et votre bienveillance.' },
+  { icone: '💛', titre: 'Merci pour votre gentillesse', texte: 'Votre douceur naturelle a créé un espace où chacun se sentait respecté et en sécurité.' },
+  { icone: '🌍', titre: 'Merci pour les sorties', texte: 'Trois aventures inoubliables que vous avez organisées avec soin, rien que pour nous.' },
+  { icone: '🤝', titre: 'Merci pour votre aide', texte: 'Vous étiez toujours là pour répondre à nos questions, même les plus petites.' },
+  { icone: '☀️', titre: 'Merci pour votre bonne humeur', texte: 'Votre énergie positive illuminait la classe, même les matins les plus difficiles.' },
+  { icone: '✨', titre: 'Merci pour tout ce que vous nous avez appris', texte: 'Des mots, des textes, la langue — mais aussi la confiance et le respect de soi.' },
+];
+
+function animerMur() {
+  const grid = document.getElementById('cartes-grid');
+  grid.innerHTML = '';
+  cartesData.forEach((carte, i) => {
+    const el = document.createElement('div');
+    el.className = 'carte-merci';
+    el.innerHTML = `
+      <span class="carte-icone">${carte.icone}</span>
+      <h3>${carte.titre}</h3>
+      <p>${carte.texte}</p>
+    `;
+    grid.appendChild(el);
+    setTimeout(() => el.classList.add('visible'), i * 150);
+  });
+}
+
+
+/* ============================================================
+   9. FINALE — CONFETTIS + FEUX D'ARTIFICE + MACHINE À ÉCRIRE
+============================================================ */
+function animerFinale() {
+  // Apparition progressive des textes
+  setTimeout(() => document.getElementById('finale-main').classList.add('visible'),  300);
+  setTimeout(() => document.getElementById('finale-sub').classList.add('visible'),   900);
+  setTimeout(() => document.getElementById('finale-anniv').classList.add('visible'), 1600);
+  setTimeout(() => {
+    document.getElementById('typewriter-text').classList.add('visible');
+    demarrerMachineEcrire();
+  }, 2200);
+
+  // Lancer les confettis et feux d'artifice
+  setTimeout(() => lancerConfettis(), 1800);
+
+  // Étoiles décoratives
+  creerEtoilesDecoratives();
+}
+
+// ---- Confettis & Feux d'artifice ----
+function lancerConfettis() {
+  const canvas = document.getElementById('finale-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H;
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Particules confettis
+  const confettis = [];
+  const COULEURS  = ['#C9A84C', '#F2BFCD', '#F7F3EC', '#E8C96A', '#ffffff', '#A8C8F0'];
+  const NB_CONF   = 160;
+
+  for (let i = 0; i < NB_CONF; i++) {
+    confettis.push({
+      x: Math.random() * W,
+      y: -Math.random() * H,
+      vy: Math.random() * 3 + 1,
+      vx: (Math.random() - 0.5) * 2,
+      w: Math.random() * 8 + 4,
+      h: Math.random() * 14 + 6,
+      rot: Math.random() * Math.PI,
+      vrot: (Math.random() - 0.5) * 0.1,
+      color: COULEURS[Math.floor(Math.random() * COULEURS.length)],
+      opacity: Math.random() * 0.5 + 0.5,
+    });
+  }
+
+  // Feux d'artifice
+  const feux = [];
+  function creerFeu() {
+    const x = 0.2 * W + Math.random() * 0.6 * W;
+    const y = 0.1 * H + Math.random() * 0.4 * H;
+    const couleur = COULEURS[Math.floor(Math.random() * COULEURS.length)];
+    for (let j = 0; j < 50; j++) {
+      const angle = (j / 50) * Math.PI * 2;
+      const vitesse = Math.random() * 4 + 1;
+      feux.push({
+        x, y,
+        vx: Math.cos(angle) * vitesse,
+        vy: Math.sin(angle) * vitesse,
+        life: 1,
+        decay: Math.random() * 0.02 + 0.012,
+        color: couleur,
+        r: Math.random() * 2.5 + 1,
+      });
+    }
+  }
+
+  // Lancer des feux régulièrement
+  const intervalFeux = setInterval(creerFeu, 900);
+  creerFeu(); // Premier immédiatement
+
+  let frame = 0;
+  function drawConfettis() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Confettis
+    confettis.forEach(c => {
+      ctx.save();
+      ctx.globalAlpha = c.opacity;
+      ctx.fillStyle   = c.color;
+      ctx.translate(c.x + c.w / 2, c.y + c.h / 2);
+      ctx.rotate(c.rot);
+      ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
+      ctx.restore();
+      c.y   += c.vy;
+      c.x   += c.vx;
+      c.rot += c.vrot;
+      if (c.y > H + 20) { c.y = -20; c.x = Math.random() * W; }
+    });
+
+    // Feux d'artifice
+    for (let i = feux.length - 1; i >= 0; i--) {
+      const f = feux[i];
+      ctx.save();
+      ctx.globalAlpha = f.life;
+      ctx.fillStyle   = f.color;
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      f.x    += f.vx;
+      f.y    += f.vy;
+      f.vy   += 0.05; // gravité
+      f.life -= f.decay;
+      if (f.life <= 0) feux.splice(i, 1);
+    }
+
+    frame++;
+    // Arrêter les feux après 12 secondes mais garder confettis
+    if (frame > 60 * 12) clearInterval(intervalFeux);
+    requestAnimationFrame(drawConfettis);
+  }
+  drawConfettis();
+}
+
+// ---- Étoiles décoratives finale ----
+function creerEtoilesDecoratives() {
+  const section = document.getElementById('page-finale');
+  for (let i = 0; i < 20; i++) {
+    const star = document.createElement('div');
+    star.className = 'star-finale';
+    star.style.cssText = `
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * 100}%;
+      animation-delay: ${Math.random() * 4}s;
+      animation-duration: ${3 + Math.random() * 3}s;
+      width: ${2 + Math.random() * 4}px;
+      height: ${2 + Math.random() * 4}px;
+      opacity: ${0.3 + Math.random() * 0.5};
+    `;
+    section.appendChild(star);
+  }
+}
+
+// ---- Machine à écrire ----
+const phrasesTypewriter = [
+  'Merci pour votre patience...',
+  'Merci pour votre bienveillance...',
+  'Merci pour les sorties...',
+  'Merci pour les souvenirs...',
+  'Merci pour cette année...',
+  'Joyeux anniversaire Mme André. ✨',
+];
+let twIdx   = 0;
+let twChar  = 0;
+let twTimer = null;
+
+function demarrerMachineEcrire() {
+  ecrirePhrase();
+}
+
+function ecrirePhrase() {
+  const el = document.getElementById('tw-phrase');
+  const phrase = phrasesTypewriter[twIdx];
+
+  if (twChar <= phrase.length) {
+    el.textContent = phrase.substring(0, twChar);
+    twChar++;
+    twTimer = setTimeout(ecrirePhrase, 55);
+  } else {
+    // Pause puis effacement
+    twTimer = setTimeout(effacerPhrase, 2200);
+  }
+}
+
+function effacerPhrase() {
+  const el     = document.getElementById('tw-phrase');
+  const phrase = phrasesTypewriter[twIdx];
+
+  if (twChar > 0) {
+    twChar--;
+    el.textContent = phrase.substring(0, twChar);
+    twTimer = setTimeout(effacerPhrase, 30);
+  } else {
+    // Phrase suivante
+    twIdx = (twIdx + 1) % phrasesTypewriter.length;
+    twTimer = setTimeout(ecrirePhrase, 500);
+  }
+}
+</script>
 </body>
 </html>
